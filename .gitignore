@@ -1,0 +1,21 @@
+# Dependências do Node (Pesadas e instalam via npm install)
+node_modules/
+
+# Segredos e Variáveis de Ambiente (CRÍTICO)
+.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Relatórios de Teste (Coverage)
+coverage/
+
+# Arquivos de Sistema Operacional (Lixo)
+.DS_Store
+Thumbs.db
+
+# Pastas de IDE (Opcional)
+.vscode/
+.idea/

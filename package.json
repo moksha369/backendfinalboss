@@ -1,0 +1,34 @@
+{
+  "name": "backnotend",
+  "version": "0.0.0",
+  "description": "Backend do projeto Final Boss",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www",
+    "test": "cross-env NODE_ENV=test jest --verbose --testTimeout=10000 --detectOpenHandles",
+    "test:watch": "cross-env NODE_ENV=test jest --watchAll --testTimeout=10000",
+    "test:coverage": "cross-env NODE_ENV=test jest --coverage --testTimeout=10000"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^17.2.3",
+    "express": "~4.16.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^9.0.0",
+    "morgan": "~1.9.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  }
+}

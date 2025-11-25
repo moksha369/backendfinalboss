@@ -1,0 +1,62 @@
+const AppError = require('../utils/appError');
+
+const handleCastErrorDB = (err) => {
+  const message = `Inválido ${err.path}: ${err.value}.`;
+  return new AppError(message, 400);
+};
+
+const handleDuplicateFieldsDB = (err) => {
+  const value = err.errmsg ? err.errmsg.match(/(["'])(\\?.)*?\1/)[0] : 'valor duplicado';
+  const message = `Valor duplicado: ${value}. Por favor, use outro valor.`;
+  return new AppError(message, 400);
+};
+
+const handleValidationErrorDB = (err) => {
+  // Proteção Extra: Se err.errors não existir, usa objeto vazio para não quebrar o .map
+  const errors = Object.values(err.errors || {}).map((el) => el.message);
+  const message = `Dados inválidos: ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
+const sendErrorDev = (err, res) => {
+  res.status(err.statusCode).json({
+    status: err.status,
+    error: err,
+    message: err.message,
+    stack: err.stack,
+  });
+};
+
+const sendErrorProd = (err, res) => {
+  if (err.isOperational) {
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
+  } else {
+    console.error('ERROR 💥', err);
+    res.status(500).json({
+      status: 'error',
+      message: 'Algo deu errado!',
+    });
+  }
+};
+
+module.exports = (err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  if (process.env.NODE_ENV === 'development') {
+    sendErrorDev(err, res);
+  } else {
+    let error = { ...err };
+    error.message = err.message;
+    error.name = err.name; // Importante copiar o nome
+
+    if (error.name === 'CastError') error = handleCastErrorDB(error);
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error.name === 'ValidationError') error = handleValidationErrorDB(error);
+
+    sendErrorProd(error, res);
+  }
+};

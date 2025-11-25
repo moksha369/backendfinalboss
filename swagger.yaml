@@ -1,0 +1,203 @@
+openapi: 3.0.0
+info:
+  title: Task Manager API
+  description: API REST desenvolvida com Express e MongoDB
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+    description: Servidor Local
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Task:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        completed:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    Error400:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+    Error401:
+      type: object
+      properties:
+        status:
+          type: string
+          example: fail
+        message:
+          type: string
+          example: Não autorizado / Token inválido
+tags:
+  - name: Auth
+    description: Rotas de Autenticação
+  - name: Tasks
+    description: Gerenciamento de Tarefas
+paths:
+  # --- ROTAS DE AUTH (Necessárias para pegar o Token) ---
+  /auth/register:
+    post:
+      summary: Registra um novo usuário
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        201:
+          description: Usuário criado
+        400:
+          description: Erro de validação
+  /auth/login:
+    post:
+      summary: Realiza login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          description: Sucesso (Retorna Token)
+        401:
+          description: Credenciais inválidas (Senha errada)
+
+  # --- ROTAS DE TAREFAS ---
+  /tasks:
+    get:
+      summary: Lista todas as tarefas do usuário logado
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de tarefas recuperada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Task'
+        500:
+          description: Erro interno
+    post:
+      summary: Cria uma nova tarefa
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  example: "Estudar Node.js"
+                description:
+                  type: string
+                  example: "Revisar arquitetura REST"
+      responses:
+        201:
+          description: Tarefa criada
+        400:
+          description: Erro de validação
+          content:
+             application/json:
+               schema:
+                 $ref: '#/components/schemas/Error400'
+
+  /tasks/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+        description: ID da Tarefa
+    get:
+      summary: Busca uma tarefa única
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Detalhes da tarefa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        404:
+          description: Tarefa não encontrada
+    patch:
+      summary: Atualiza uma tarefa (ex: marcar como concluída)
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                completed:
+                  type: boolean
+      responses:
+        200:
+          description: Tarefa atualizada
+    delete:
+      summary: Deleta uma tarefa
+      tags: [Tasks]
+      security:
+        - bearerAuth: []
+      responses:
+        204:
+          description: Deletado com sucesso (Sem conteúdo de retorno)
+        404:
+          description: Tarefa não encontrada
