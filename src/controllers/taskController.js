@@ -1,5 +1,3 @@
-// src/controllers/taskController.js
-// (Se este arquivo já existir, ignore este passo)
 const taskService = require('../services/taskService');
 
 const catchAsync = (fn) => (req, res, next) => fn(req, res, next).catch(next);

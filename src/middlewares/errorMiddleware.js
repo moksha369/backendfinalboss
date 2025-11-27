@@ -12,7 +12,6 @@ const handleDuplicateFieldsDB = (err) => {
 };
 
 const handleValidationErrorDB = (err) => {
-  // Proteção Extra: Se err.errors não existir, usa objeto vazio para não quebrar o .map
   const errors = Object.values(err.errors || {}).map((el) => el.message);
   const message = `Dados inválidos: ${errors.join('. ')}`;
   return new AppError(message, 400);
@@ -51,7 +50,7 @@ module.exports = (err, req, res, next) => {
   } else {
     let error = { ...err };
     error.message = err.message;
-    error.name = err.name; // Importante copiar o nome
+    error.name = err.name; 
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);

@@ -1,7 +1,5 @@
-// src/controllers/authController.js
 const authService = require('../services/authService');
 
-// Helper para evitar try/catch repetitivo
 const catchAsync = (fn) => (req, res, next) => {
   fn(req, res, next).catch(next);
 };

@@ -32,7 +32,6 @@ const options = {
       },
     ],
   },
-  // Arquivos onde o swagger-jsdoc vai procurar os comentários @swagger
   apis: ['./src/routes/*.js', './src/models/*.js'], 
 };
 
